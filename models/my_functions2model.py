@@ -226,6 +226,6 @@ def gda_main_proc(go_session, go_hits, mode=1):
         cat_features = list(go_session.select_dtypes(include=['object', 'category']).columns)
         unique_data = {col: pd.Series(go_session[col].unique()) for col in cat_features}
         go_session_unique = pd.DataFrame(unique_data)
-        go_session_unique.to_csv('data/cat_uniq_data.csv')
+        go_session_unique.to_csv('models/data/cat_uniq_data.csv')
 
     return go_session
