@@ -187,36 +187,45 @@ def gda_calc_conversion(session, hits, groupby_col, key_cols, cols_pref):
     return session
 
 
-def gda_main_proc(go_session, go_hits):
+def gda_main_proc(go_session, go_hits, mode=1):
 
     go_session = gda_drop_col(go_session, 'client_id')
     go_session = gda_drop_col(go_session, 'utm_keyword')
     go_session = gda_drop_col(go_session, 'device_os' )
-    go_session = gda_drop_col(go_session,  'device_model')
+    go_session = gda_drop_col(go_session, 'device_model')
 
 
-    go_session = gda_set_moda(go_session, 'utm_source',mode=1)
-    go_session = gda_set_moda(go_session, 'utm_medium',mode=1)
-    go_session = gda_set_moda(go_session, 'utm_campaign',mode=1)
-    go_session = gda_set_moda(go_session, 'utm_adcontent',mode=1)
-    go_session = gda_set_moda(go_session, 'device_brand',mode=1)
+    go_session = gda_set_moda(go_session, 'utm_source',mode=mode)
+    go_session = gda_set_moda(go_session, 'utm_medium',mode=mode)
+    go_session = gda_set_moda(go_session, 'utm_campaign',mode=mode)
+    go_session = gda_set_moda(go_session, 'utm_adcontent',mode=mode)
+    go_session = gda_set_moda(go_session, 'device_brand',mode=mode)
 
     go_session = gda_set_date_feature(go_session, 'visit_date', 'visit_time')
 
-
     go_session = gda_set_mult(go_session, 'device_screen_resolution')
 
-    go_session = gda_leave_only_top_val(go_session, 'geo_city', 20 , mode=1 )
-    go_session = gda_leave_only_top_val(go_session, 'geo_country', 10 , mode=1  )
-    go_session = gda_leave_only_top_val(go_session, 'device_browser', 10 , mode=1 )
-    go_session = gda_leave_only_top_val(go_session, 'device_brand', 10 , mode=1 )
-    go_session = gda_leave_only_top_val(go_session, 'utm_source', 10 , mode=1 )
-    go_session = gda_leave_only_top_val(go_session, 'utm_medium', 10 , mode=1 )
-    go_session = gda_leave_only_top_val(go_session, 'utm_campaign', 15 , mode=1 )
-    go_session = gda_leave_only_top_val(go_session, 'utm_adcontent', 10 , mode=1 )
+    go_session = gda_leave_only_top_val(go_session, 'geo_city', 20 , mode=mode )
+    go_session = gda_leave_only_top_val(go_session, 'geo_country', 10 , mode=mode  )
+    go_session = gda_leave_only_top_val(go_session, 'device_browser', 10 , mode=mode )
+    go_session = gda_leave_only_top_val(go_session, 'device_brand', 10 , mode=mode )
+    go_session = gda_leave_only_top_val(go_session, 'utm_source', 10 , mode=mode )
+    go_session = gda_leave_only_top_val(go_session, 'utm_medium', 10 , mode=mode )
+    go_session = gda_leave_only_top_val(go_session, 'utm_campaign', 15 , mode=mode )
+    go_session = gda_leave_only_top_val(go_session, 'utm_adcontent', 10 , mode=mode )
 
-    go_session = gda_calc_conversion(go_session, go_hits, 'event_action', 'session_id', 'target')
 
-    go_session = gda_drop_col(go_session, 'session_id')
+    # Для режима обучения - добавляем таргет и сохраняем параметры в файл
+    # для режима предсказания - они не нужны  
+    if mode == 1: 
+        go_session = gda_calc_conversion(go_session, go_hits, 'event_action', 'session_id', 'target')
+
+        go_session = gda_drop_col(go_session, 'session_id')
+
+    #   выгружаем файл с данными по модам категориальных признаков  - для предсказания модели берем из файла
+        cat_features = list(go_session.select_dtypes(include=['object', 'category']).columns)
+        unique_data = {col: pd.Series(go_session[col].unique()) for col in cat_features}
+        go_session_unique = pd.DataFrame(unique_data)
+        go_session_unique.to_csv('data/cat_uniq_data.csv')
 
     return go_session

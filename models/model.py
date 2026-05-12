@@ -41,7 +41,6 @@ def train_model(X, y):
         cat_features=cat_features
     )
 
-
     return model
 
 def main_procces_start():
@@ -53,7 +52,9 @@ def main_procces_start():
     X = lo_session.drop(['target_is'], axis=1)
     y = lo_session['target_is']
 
-    train_model(X, y)
+    model = train_model(X, y)
+
+    dump_model('models/model_v1.pkl',model)
 
 
 
