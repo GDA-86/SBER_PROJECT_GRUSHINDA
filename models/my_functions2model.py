@@ -161,7 +161,7 @@ def gda_leave_only_top_val(data, col, n, mode=1):
 
     if mode == 2:
         if not cat_uniq_data:  # type: ignore
-            cat_uniq_data = pd.read_csv('data/cat_uniq_data.csv')
+            cat_uniq_data = pd.read_csv('models/data/cat_uniq_data.csv')
         top_n = cat_uniq_data[col].value_counts().nlargest(n).index
 
     top_n = top_n.drop(['(none)', '(not set)', 'other'], errors='ignore') # type: ignore

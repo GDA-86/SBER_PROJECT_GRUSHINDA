@@ -64,8 +64,8 @@ def train_model(X, y):
     return model
 
 def main_procces_start():
-    lo_sessions = pd.read_csv('data/ga_sessions.csv')
-    lo_hits = pd.read_csv('data/ga_hits.csv')
+    lo_sessions = pd.read_csv('models/data/ga_sessions.csv')
+    lo_hits = pd.read_csv('models/data/ga_hits.csv')
 
     lo_session = gda_main_proc(lo_sessions, lo_hits, mode=1)
 
