@@ -1,21 +1,20 @@
 import pandas as pd
 
-from models.my_functions2model import gda_main_proc
+from my_functions2model import gda_main_proc
 
 import pickle
 
 from catboost import CatBoostClassifier
 
+from sklearn.metrics import classification_report, roc_auc_score, confusion_matrix
 
 def load_model(name):
-    # Десериализуем pipeline из файла
+    # Десериализуем model из файла
     with open('name', 'rb') as pkl_file:
         loaded_pipe = pickle.load(pkl_file)
 
-
-
 def dump_model(name, model):
-    # Сериализуем pipeline и записываем результат в файл
+    # Сериализуем model и записываем результат в файл
     with open(name, 'wb') as output:
         pickle.dump(model, output)
 
@@ -41,13 +40,34 @@ def train_model(X, y):
         cat_features=cat_features
     )
 
+
+    # собираем статистику на полном объеме 
+
+    #Получаем предсказания
+    preds = model.predict(X)          # Классы (0 или 1)
+    probs = model.predict_proba(X)[:, 1] # Вероятности 
+
+    # Выводим основные метрики 
+    print("Отчет по классификации:")
+    print(classification_report(y, preds))
+
+    # Выводим AUC-ROC 
+    auc = roc_auc_score(y, probs)
+    print(f"ROC-AUC на тестовой выборке: {auc:.4f}")
+
+    # Матрица ошибок 
+    print("\nМатрица ошибок:")
+    print(pd.crosstab(y, preds, rownames=['Actual'], colnames=['Predicted']))
+
+    
+
     return model
 
 def main_procces_start():
     lo_sessions = pd.read_csv('data/ga_sessions.csv')
     lo_hits = pd.read_csv('data/ga_hits.csv')
 
-    lo_session = gda_main_proc(lo_sessions, lo_hits)
+    lo_session = gda_main_proc(lo_sessions, lo_hits, mode=1)
 
     X = lo_session.drop(['target_is'], axis=1)
     y = lo_session['target_is']
