@@ -52,16 +52,17 @@ def predict():
                 'geo_city': request.form.get('geo_city'),
             }
 
-            print(input_data)
+            #print(f'ШАГ 1 {input_data}')
 
             #with open('models/model_v1.pkl', 'rb') as f: model = pickle.load(f)
             model = CatBoostClassifier()
             model.load_model('models/model_v1.pkl')
 
+            #print(f'ШАГ 2 {model}')
 
             lo_sessions = pd.DataFrame(input_data, index=[0])
 
-            print(lo_sessions)
+            #print(f'ШАГ 3 {lo_sessions}')
             
             lo_hits = pd.DataFrame({'1': '1'}, index=[0]) # так определена ф-ия (
             
@@ -71,11 +72,15 @@ def predict():
                 #Получаем предсказания
             prediction = model.predict(X)          # Классы (0 или 1)
 
+            #print(f'ШАГ 8 - prediction')  
+
+            prediction_list = prediction.tolist()  
+            
             return jsonify(
                 {
                     'status': 'success',
                     'received_data': input_data,
-                    'prediction': prediction,
+                    'prediction': prediction_list,
                 }
             )
 

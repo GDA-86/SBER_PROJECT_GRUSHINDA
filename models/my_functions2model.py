@@ -118,17 +118,15 @@ def gda_set_date_feature(data, col_date, col_time):
     date_time = data['visit_datetime'].dt
 
     # Временные отрезки
-    data['visit_hour']   = date_time.hour.astype(object)           
-    data['visit_minute'] = date_time.minute.astype(object)       
-    data['visit_second'] = date_time.second.astype(object)      
+    data['visit_hour']   = date_time.hour        
+    data['visit_minute'] = date_time.minute      
+    data['visit_second'] = date_time.second      
 
 
     # Календарные признаки
     data['visit_day_of_week'] = date_time.dayofweek  
     data['visit_month']       = date_time.month          
-    #data['visit_is_year_end'] = date_time.is_year_end.astype(int)  
-    data['visit_is_year_end'] = date_time.is_year_end.astype(int).astype(object)
-
+    data['visit_is_year_end'] = date_time.is_year_end.astype(int)  
     
         # Периоды суток (Custom feature)
     def get_part_of_day(h):
@@ -205,7 +203,11 @@ def gda_main_proc(go_session, go_hits, mode=1):
 
     go_session = gda_set_date_feature(go_session, 'visit_date', 'visit_time')
 
+    print(f'ШАГ 4 - gda_set_date_feature')
+
     go_session = gda_set_mult(go_session, 'device_screen_resolution')
+
+    print(f'ШАГ 5 - gda_set_mult')
 
     go_session = gda_leave_only_top_val(go_session, 'geo_city', 20 , mode=mode )
     go_session = gda_leave_only_top_val(go_session, 'geo_country', 10 , mode=mode  )
@@ -216,6 +218,7 @@ def gda_main_proc(go_session, go_hits, mode=1):
     go_session = gda_leave_only_top_val(go_session, 'utm_campaign', 15 , mode=mode )
     go_session = gda_leave_only_top_val(go_session, 'utm_adcontent', 10 , mode=mode )
 
+    print(f'ШАГ 5 - gda_leave_only_top_val')
 
     # Для режима обучения - добавляем таргет и сохраняем параметры в файл
     # для режима предсказания - они не нужны  
@@ -224,29 +227,26 @@ def gda_main_proc(go_session, go_hits, mode=1):
 
         go_session = gda_drop_col(go_session, 'session_id')
 
-        ##   выгружаем файл с данными по модам категориальных признаков  - для предсказания модели берем из файла
-        #cat_features = list(go_session.select_dtypes(include=['object', 'category']).columns)
-        ## Также убираем NaN, чтобы пустые строки не ломали структуру данных
-        #unique_data = {
-        #    col: pd.Series(go_session[col].dropna().unique()).tolist() 
-        #    for col in cat_features
-        #    }   
+        #   выгружаем файл с данными по модам категориальных признаков  - для предсказания модели берем из файла
+        cat_features = list(go_session.select_dtypes(include=['object', 'category']).columns)
+        # Также убираем NaN, чтобы пустые строки не ломали структуру данных
+        unique_data = {
+            col: pd.Series(go_session[col].dropna().unique()).tolist() 
+            for col in cat_features
+            }   
 
         ## Для записи в CSV выравниваем длины списков, заполняя пустоты 'other' или None
-        #go_session_unique = pd.DataFrame.from_dict(unique_data, orient='index').transpose()
-        #go_session_unique.to_csv('models/data/cat_uniq_data.csv', index=False)
+        go_session_unique = pd.DataFrame.from_dict(unique_data, orient='index').transpose()
+        go_session_unique.to_csv('models/data/cat_uniq_data.csv', index=False)
 
         
     if mode == 2: 
         go_session = gda_drop_col(go_session, 'session_id')
 
-
-
-
+        #print(f'ШАГ 6 - gda_drop_col')
 
     go_session = go_session.astype(object)
-    for col in go_session.columns:
-        go_session[col] = go_session[col].apply(lambda x: x.item() if hasattr(x, 'item') else x)
-        
-
+    #for col in go_session.columns:
+    #    go_session[col] = go_session[col].apply(lambda x: x.item() if hasattr(x, 'item') else x)
+    #print(f'ШАГ 7 - fin')
     return go_session
