@@ -6,7 +6,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
 
-
+from catboost import CatBoostClassifier
 import pandas as pd
 import pickle
 from flask import Flask, jsonify, render_template, request
@@ -54,7 +54,10 @@ def predict():
 
             print(input_data)
 
-            with open('models/model_v1.pkl', 'rb') as f: model = pickle.load(f)
+            #with open('models/model_v1.pkl', 'rb') as f: model = pickle.load(f)
+            model = CatBoostClassifier()
+            model.load_model('models/model_v1.pkl')
+
 
             lo_sessions = pd.DataFrame(input_data, index=[0])
 

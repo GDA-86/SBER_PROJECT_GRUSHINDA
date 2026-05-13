@@ -118,15 +118,17 @@ def gda_set_date_feature(data, col_date, col_time):
     date_time = data['visit_datetime'].dt
 
     # Временные отрезки
-    data['visit_hour']   = date_time.hour           
-    data['visit_minute'] = date_time.minute       
-    data['visit_second'] = date_time.second      
+    data['visit_hour']   = date_time.hour.astype(object)           
+    data['visit_minute'] = date_time.minute.astype(object)       
+    data['visit_second'] = date_time.second.astype(object)      
 
 
     # Календарные признаки
     data['visit_day_of_week'] = date_time.dayofweek  
     data['visit_month']       = date_time.month          
-    data['visit_is_year_end'] = date_time.is_year_end.astype(int)  
+    #data['visit_is_year_end'] = date_time.is_year_end.astype(int)  
+    data['visit_is_year_end'] = date_time.is_year_end.astype(int).astype(object)
+
     
         # Периоды суток (Custom feature)
     def get_part_of_day(h):
@@ -238,5 +240,13 @@ def gda_main_proc(go_session, go_hits, mode=1):
     if mode == 2: 
         go_session = gda_drop_col(go_session, 'session_id')
 
+
+
+
+
+    go_session = go_session.astype(object)
+    for col in go_session.columns:
+        go_session[col] = go_session[col].apply(lambda x: x.item() if hasattr(x, 'item') else x)
         
+
     return go_session

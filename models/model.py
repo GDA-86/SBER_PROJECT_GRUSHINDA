@@ -18,21 +18,27 @@ from sklearn.metrics import classification_report, roc_auc_score, confusion_matr
 
 def load_model(name):
     # Десериализуем model из файла
-    with open('name', 'rb') as pkl_file:
-        loaded_pipe = pickle.load(pkl_file)
+    #with open('name', 'rb') as pkl_file:
+    #    loaded_pipe = pickle.load(pkl_file)
+
+    model = CatBoostClassifier()
+    model.load_model(name)
+    return model
 
 def dump_model(name, model):
     # Сериализуем model и записываем результат в файл
-    with open(name, 'wb') as output:
-        pickle.dump(model, output)
+    #with open(name, 'wb') as output:
+    #    pickle.dump(model, output)
+    model.save_model(name)
 
 
 def train_model(X, y):
-    cat_features = list(X.select_dtypes(include=['object', 'category']).columns)
+    #cat_features = list(X.select_dtypes(include=['object', 'category']).columns)
+    cat_features = [str(col) for col in X.select_dtypes(include=['object', 'category']).columns]
 
     # Инициализация модели
     model = CatBoostClassifier(
-        iterations=500,
+        iterations=100,
         learning_rate=0.05,
         depth=6,
         eval_metric='AUC', 
