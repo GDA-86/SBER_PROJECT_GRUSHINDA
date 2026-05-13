@@ -33,8 +33,8 @@ def dump_model(name, model):
 
 
 def train_model(X, y):
-    #cat_features = list(X.select_dtypes(include=['object', 'category']).columns)
-    cat_features = [str(col) for col in X.select_dtypes(include=['object', 'category']).columns]
+    cat_features = list(X.select_dtypes(include=['object', 'category']).columns)
+    #cat_features = [str(col) for col in X.select_dtypes(include=['object', 'category']).columns]
 
     # Инициализация модели
     model = CatBoostClassifier(

@@ -194,20 +194,23 @@ def gda_main_proc(go_session, go_hits, mode=1):
     go_session = gda_drop_col(go_session, 'device_os' )
     go_session = gda_drop_col(go_session, 'device_model')
 
-
+    print(f'ШАГ 1 - gda_drop_col')
+    
     go_session = gda_set_moda(go_session, 'utm_source',mode=mode)
     go_session = gda_set_moda(go_session, 'utm_medium',mode=mode)
     go_session = gda_set_moda(go_session, 'utm_campaign',mode=mode)
     go_session = gda_set_moda(go_session, 'utm_adcontent',mode=mode)
     go_session = gda_set_moda(go_session, 'device_brand',mode=mode)
 
+    print(f'ШАГ 2 - gda_set_moda')
+
     go_session = gda_set_date_feature(go_session, 'visit_date', 'visit_time')
 
-    print(f'ШАГ 4 - gda_set_date_feature')
+    print(f'ШАГ 3 - gda_set_date_feature')
 
     go_session = gda_set_mult(go_session, 'device_screen_resolution')
 
-    print(f'ШАГ 5 - gda_set_mult')
+    print(f'ШАГ 4 - gda_set_mult')
 
     go_session = gda_leave_only_top_val(go_session, 'geo_city', 20 , mode=mode )
     go_session = gda_leave_only_top_val(go_session, 'geo_country', 10 , mode=mode  )
@@ -243,10 +246,10 @@ def gda_main_proc(go_session, go_hits, mode=1):
     if mode == 2: 
         go_session = gda_drop_col(go_session, 'session_id')
 
-        #print(f'ШАГ 6 - gda_drop_col')
+        #print(f'ШАГ 7 - gda_drop_col')
 
-    go_session = go_session.astype(object)
+    #go_session = go_session.astype(object)
     #for col in go_session.columns:
     #    go_session[col] = go_session[col].apply(lambda x: x.item() if hasattr(x, 'item') else x)
-    #print(f'ШАГ 7 - fin')
+    print(f'ШАГ 6 - fin')
     return go_session
