@@ -1,3 +1,11 @@
+
+import os
+import sys
+
+# Определяем путь к корню проекта (SBER_PROJECT_GRUSHINDA)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+
 import pandas as pd
 
 from my_functions2model import gda_main_proc
