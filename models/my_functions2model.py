@@ -160,8 +160,8 @@ def gda_leave_only_top_val(data, col, n, mode=1):
         top_n = data[col].value_counts().nlargest(n).index
 
     if mode == 2:
-        if not cat_uniq_data:  # type: ignore
-            cat_uniq_data = pd.read_csv('models/data/cat_uniq_data.csv')
+        #if not cat_uniq_data:  # type: ignore
+        cat_uniq_data = pd.read_csv('models/data/cat_uniq_data.csv')
         top_n = cat_uniq_data[col].value_counts().nlargest(n).index
 
     top_n = top_n.drop(['(none)', '(not set)', 'other'], errors='ignore') # type: ignore
@@ -222,10 +222,21 @@ def gda_main_proc(go_session, go_hits, mode=1):
 
         go_session = gda_drop_col(go_session, 'session_id')
 
-    #   выгружаем файл с данными по модам категориальных признаков  - для предсказания модели берем из файла
-        cat_features = list(go_session.select_dtypes(include=['object', 'category']).columns)
-        unique_data = {col: pd.Series(go_session[col].unique()) for col in cat_features}
-        go_session_unique = pd.DataFrame(unique_data)
-        go_session_unique.to_csv('models/data/cat_uniq_data.csv')
+        ##   выгружаем файл с данными по модам категориальных признаков  - для предсказания модели берем из файла
+        #cat_features = list(go_session.select_dtypes(include=['object', 'category']).columns)
+        ## Также убираем NaN, чтобы пустые строки не ломали структуру данных
+        #unique_data = {
+        #    col: pd.Series(go_session[col].dropna().unique()).tolist() 
+        #    for col in cat_features
+        #    }   
 
+        ## Для записи в CSV выравниваем длины списков, заполняя пустоты 'other' или None
+        #go_session_unique = pd.DataFrame.from_dict(unique_data, orient='index').transpose()
+        #go_session_unique.to_csv('models/data/cat_uniq_data.csv', index=False)
+
+        
+    if mode == 2: 
+        go_session = gda_drop_col(go_session, 'session_id')
+
+        
     return go_session

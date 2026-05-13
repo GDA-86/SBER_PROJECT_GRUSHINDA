@@ -1,7 +1,17 @@
+import os
+import sys
+
+# Определяем путь к корню проекта (SBER_PROJECT_GRUSHINDA)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+
+
+
 import pandas as pd
 import pickle
 from flask import Flask, jsonify, render_template, request
 from models.my_functions2model import gda_main_proc
+
 
 app = Flask(__name__)
 
@@ -42,11 +52,15 @@ def predict():
                 'geo_city': request.form.get('geo_city'),
             }
 
+            print(input_data)
 
             with open('models/model_v1.pkl', 'rb') as f: model = pickle.load(f)
 
-            lo_sessions = pd.DataFrame(list(input_data))
-            lo_hits = pd.DataFrame(list({'1': '1'})) # так определена ф-ия (
+            lo_sessions = pd.DataFrame(input_data, index=[0])
+
+            print(lo_sessions)
+            
+            lo_hits = pd.DataFrame({'1': '1'}, index=[0]) # так определена ф-ия (
             
             X = gda_main_proc(lo_sessions, lo_hits, mode=2)
 
