@@ -38,7 +38,7 @@ def train_model(X, y):
 
     # Инициализация модели
     model = CatBoostClassifier(
-        iterations=10,
+        iterations=1000,
         learning_rate=0.05,
         depth=6,
         eval_metric='AUC', 
