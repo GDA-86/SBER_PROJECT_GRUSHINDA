@@ -7,6 +7,7 @@ __pycache__/
 *.pyc
 
 *.csv
+!cat_uniq_data.csv
 
 #*.ipynb
 
